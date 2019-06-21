@@ -83,6 +83,7 @@ fi
 # Now going to clone in the MagicMirror Master Branch
 
 clear
+cd ~/
 git clone https://github.com/MichMich/MagicMirror
 cd MagicMirror
 npm install
