@@ -169,6 +169,13 @@ done
 		--timeout 4 \
 		--msgbox "Now going to turn off the screen saver by writing the following entries in the autostart file.\n\n@xset s noblank\n@xset s off\n@xset -dpms" 0 0
 	echo -e "@xset s noblank\n@xset s off\n@xset -dpms" | sudo tee -a /etc/xdg/lxsession/LXDE-pi/autostart > /dev/null
+	#Make backup of original conf
+	sudo cp /etc/lightdm/lightdm.conf /etc/lightdm/lightdm.conf.original
+	dialog --title "Screen Saver" \
+		--clear \
+		--timeout 4 \
+		--msgbox "Now going to turn off the screen saver by writing the following entries in the lightdm.conf file.\n\n[SeatDefaults]\nxserver-command=X -x 0 -dpms" 0 0
+	echo -e "\n[SeatDefaults]\nxserver-command=X -s 0 -dpms" | sudo tee -a /etc/lightdm/lightdm.conf
 
 ############################################################
 
@@ -203,40 +210,53 @@ while true; do
 								dialog --title "Now or Later" \
 									--clear \
 									--yes-label "Exit" \
-									--no-label "Automate Launch" \
-									--yesno "You can launch your MagicMirror client by restarting your pi and running 'node clientonly --address "$_ServAddr" -port "$_Port" in your terminal.\nOr you can let me automate the reboot and launch using pm2.\n\nIf you choose to automate your Rpi will restart and your MagicMirror Client will auto start on reboot.\nThank you --JHart" 0 0
+									--no-label "Exit" \
+									--yesno "You can launch your MagicMirror client by restarting your pi and running 'node clientonly --address "$_ServAddr" -port "$_Port" in your terminal.\nOr you can let me automate the reboot and launch using pm2. (This feature not available yet.  Please see https://github.com/MichMich/MagicMirror/wiki/Auto-Starting-MagicMirror for autostarting.\nThank you --JHart" 0 0
 								yn=$?
+								#######################################################################3
 								if [ "${yn}" == "0" ];
 								then
 									exit
 								else
 									if [ "${yn}" == "1" ];
 									then
-										dialog --title "Set Up Automation" \
-											--clear \
-											--timeout 4 \
-											--msgbox "Now going to setup pm2 and needed mm.sh script for auto launch of client after reboot." 0 0
-										clear
-										sudo npm install -g pm2
-										pm2 startup 2>&1 | tee /tmp/pmStart.txt
-										sleep 2
-										cd
-										_PMCommand=$(cat /tmp/pmStart.txt | awk '{if(NR==3)print $0}')
-										_Run=$(eval "$_PMCommand")
-										echo "$_Run"
-										sleep 4
-										rm mm.sh
-										sleep 2
-										echo -e "cd ~/MagicMirror/\nDISPLAY=:0 node clientonly --address "$_ServAddr" --port "$_Port""  | tee -a mm.sh
-										chmod +x mm.sh
-										pm2 start mm.sh
-										sleep 5
-										pm2 save
-										sleep 5
-										sudo reboot
-										break
+										exit
+										#######################################################################################################
+										# This feature is not ready yet
+										#dialog --title "Set Up Automation" \
+										#	--clear \
+										#	--timeout 4 \
+										#	--msgbox "Now going to setup pm2 and needed mm.sh script for auto launch of client after reboot." 0 0
+										#clear
+										#sudo npm install -g pm2
+										#pm2 startup 2>&1 | tee /tmp/pmStart.txt
+										#sleep 2
+										#cd
+										#_PMCommand=$(cat /tmp/pmStart.txt | awk '{if(NR==3)print $0}')
+										#_Run=$(eval "$_PMCommand")
+										#echo "$_Run"
+										#sleep 4
+										#rm mm.sh
+										#sleep 2
+										#echo -e "cd ~/MagicMirror/\nDISPLAY=:0 node clientonly --address "$_ServAddr" --port "$_Port""  | tee -a mm.sh
+										#chmod +x mm.sh
+										#pm2 start mm.sh
+										#sleep 5
+										#pm2 save
+										#sleep 5
+										#pm2 list
+										#sleep 5
+										#pm2 restart mm.sh
+										#sleep 5
+										#pm2 save
+										#sleep 5
+										#pm2 list
+										#cat ~/RpiKiosk_MM/dump.pm2 | tee /home/pi/.pm2/
+										#sleep2
+										#cat /home/pi/.pm2/dump.pm2
+										#break
 									fi
-								fi	
+								fi
 
 
 								break
