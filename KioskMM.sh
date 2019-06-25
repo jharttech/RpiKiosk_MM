@@ -164,18 +164,38 @@ done
 ##########################################################
 
 # Now going to disable the screen saver
-	dialog --title "Screen Saver" \
-		--clear \
-		--timeout 4 \
-		--msgbox "Now going to turn off the screen saver by writing the following entries in the autostart file.\n\n@xset s noblank\n@xset s off\n@xset -dpms" 0 0
-	echo -e "@xset s noblank\n@xset s off\n@xset -dpms" | sudo tee -a /etc/xdg/lxsession/LXDE-pi/autostart > /dev/null
+while true; do
+	_Prev_AutoFile=$(ls /etc/xdg/lxsession/LXDE-pi/ | grep "autostart.screensave")
+	if [ "" == "$_Prev_AutoFile" ];
+	then
+		#Make copy of current autostart file
+		sudo cp /etc/xdg/lxsession/LXDE-pi/autostart /etc/xdg/lxsession/LXDE-pi/autostart.screensave
+		dialog --title "Screen Saver" \
+			--clear \
+			--timeout 4 \
+			--msgbox "Now going to turn off the screen saver by writing the following entries in the autostart file.\n\n@xset s noblank\n@xset s off\n@xset -dpms" 0 0
+		echo -e "@xset s noblank\n@xset s off\n@xset -dpms" | sudo tee -a /etc/xdg/lxsession/LXDE-pi/autostart > /dev/null
+		break
+	else
+		sudo mv /etc/xdg/lxsession/LXDE-pi/autostart.screensave /etc/xdg/lxsession/LXDE-pi/autostart
+	fi
+done
+while true; do
+	_Prev_Lightdm=$(ls /etc/lightdm/ | grep "lightdm.conf.original")
+	if [ "" == "$_Prev_Lightdm" ];
+	then
 	#Make backup of original conf
-	sudo cp /etc/lightdm/lightdm.conf /etc/lightdm/lightdm.conf.original
-	dialog --title "Screen Saver" \
-		--clear \
-		--timeout 4 \
-		--msgbox "Now going to turn off the screen saver by writing the following entries in the lightdm.conf file.\n\n[SeatDefaults]\nxserver-command=X -x 0 -dpms" 0 0
-	echo -e "\n[SeatDefaults]\nxserver-command=X -s 0 -dpms" | sudo tee -a /etc/lightdm/lightdm.conf
+		sudo cp /etc/lightdm/lightdm.conf /etc/lightdm/lightdm.conf.original
+		dialog --title "Screen Saver" \
+			--clear \
+			--timeout 4 \
+			--msgbox "Now going to turn off the screen saver by writing the following entries in the lightdm.conf file.\n\n[SeatDefaults]\nxserver-command=X -x 0 -dpms" 0 0
+		echo -e "\n[SeatDefaults]\nxserver-command=X -s 0 -dpms" | sudo tee -a /etc/lightdm/lightdm.conf
+		break
+	else
+		sudo mv /etc/lightdm/lightdm.conf.original /etc/lightdm/lightdm.conf
+	fi
+done
 
 ############################################################
 
