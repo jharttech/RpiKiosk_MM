@@ -120,6 +120,7 @@ while true; do
 	then
 		# Make a copy of original config file
 		sudo cp /etc/xdg/lxsession/LXDE-pi/autostart /etc/xdg/lxsession/LXDE-pi/autostart.original
+		sudo cp /etc/xdg/lxsession/LXDE-pi/autostart /etc/xdg/lxsession/LXDE-pi/autostart.KioskMMBackup
 		dialog --title "Screen Orientation" \
 			--clear \
 			--yesno "The default screen layout is landscape.\n\nWould you like to rotate the screen layout to portrait?" 0 0
@@ -158,6 +159,8 @@ while true; do
 				break
 			fi
 		fi
+	else
+		sudo mv /etc/xdg/lxsession/LXDE-pi/autostart.KioskMMBackup /etc/xdg/lxsession/LXDE-pi/autstart
 	fi
 done
 
