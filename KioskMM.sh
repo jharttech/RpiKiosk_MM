@@ -269,6 +269,7 @@ while true; do
 										sleep 5
 										sleep2
 										rm ./envScript.sh
+										sudo reboot
 										break
 									fi
 								fi
