@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 #######################################################
 
 # This script will help do the heavy lifting when 
@@ -100,13 +100,12 @@ while true; do
 	_Prev_Ran=$(ls /boot/ | grep "config.txt.KioskMMBackup")
 	if [ "" == "$_Prev_Ran" ];
 	then
-		sleep 2
 		sudo cp /boot/config.txt /boot/config.txt.KioskMMBackup
 		dialog --title "Open GL Driver" \
 			--clear \
 			--timeout 5 \
 			--msgbox "Now writing the following entry to the config file.\n\n#Turn on OpenGL Driver.\ndtoverlay=vc4-kms-v3d" 0 0
-		echo -e "# Turn on Open GL Driver.\ndtoverlay=vc4-kms-v3d" | sudo tee -a /boot/config.txt > /dev/null
+		echo -e "# Turn on Open GL Driver.\ndtoverlay=vc4-kms-v3d" | sudo tee -a /boot/config.txt
 		break
 	else
 		sudo mv /boot/config.txt.KioskMMBackup /boot/config.txt
@@ -233,8 +232,8 @@ while true; do
 								dialog --title "Now or Later" \
 									--clear \
 									--yes-label "Exit" \
-									--no-label "Exit" \
-									--yesno "You can launch your MagicMirror client by restarting your pi and running 'node clientonly --address "$_ServAddr" -port "$_Port" in your terminal.\nOr you can let me automate the reboot and launch using pm2. (This feature not available yet.  Please see https://github.com/MichMich/MagicMirror/wiki/Auto-Starting-MagicMirror for autostarting.\nThank you --JHart" 0 0
+									--no-label "Autolaunch" \
+									--yesno "You can launch your MagicMirror client by restarting your pi and running 'node clientonly --address "$_ServAddr" -port "$_Port" in your terminal.\nOr you can let me automate the reboot and launch using pm2. Please see https://github.com/MichMich/MagicMirror/wiki/Auto-Starting-MagicMirror for more information on autostarting MagicMirror.\nThank you --JHart" 0 0
 								yn=$?
 								#######################################################################3
 								if [ "${yn}" == "0" ];
@@ -243,41 +242,34 @@ while true; do
 								else
 									if [ "${yn}" == "1" ];
 									then
-										exit
-										#######################################################################################################
-										# This feature is not ready yet
-										#dialog --title "Set Up Automation" \
-										#	--clear \
-										#	--timeout 4 \
-										#	--msgbox "Now going to setup pm2 and needed mm.sh script for auto launch of client after reboot." 0 0
-										#clear
-										#sudo npm install -g pm2
-										#pm2 startup 2>&1 | tee /tmp/pmStart.txt
-										#sleep 2
-										#cd
-										#_PMCommand=$(cat /tmp/pmStart.txt | awk '{if(NR==3)print $0}')
-										#_Run=$(eval "$_PMCommand")
-										#echo "$_Run"
-										#sleep 4
-										#rm mm.sh
-										#sleep 2
-										#echo -e "cd ~/MagicMirror/\nDISPLAY=:0 node clientonly --address "$_ServAddr" --port "$_Port""  | tee -a mm.sh
-										#chmod +x mm.sh
-										#pm2 start mm.sh
-										#sleep 5
-										#pm2 save
-										#sleep 5
-										#pm2 list
-										#sleep 5
-										#pm2 restart mm.sh
-										#sleep 5
-										#pm2 save
-										#sleep 5
-										#pm2 list
-										#cat ~/RpiKiosk_MM/dump.pm2 | tee /home/pi/.pm2/
-										#sleep2
-										#cat /home/pi/.pm2/dump.pm2
-										#break
+										dialog --title "Set Up Automation" \
+											--clear \
+											--timeout 4 \
+											--msgbox "Now going to setup pm2 and needed mm.sh script for auto launch of client after reboot." 0 0
+										clear
+										sudo npm install -g pm2
+										pm2 startup 2>&1 | tee /tmp/pmStart.txt
+										sleep 2
+										cd
+										echo -e "#!/bin/bash\nset -x\n" | tee envScript.sh
+										chmod +x envScript.sh
+										cat /tmp/pmStart.txt | tee -a envScript.sh
+										./envScript.sh
+
+										sleep 4
+										rm mm.sh
+										sleep 2
+										echo -e "cd ~/MagicMirror/\nDISPLAY=:0 node clientonly --address "$_ServAddr" --port "$_Port""  | tee -a mm.sh
+										chmod +x mm.sh
+										pm2 start mm.sh
+										sleep 5
+										pm2 save
+										sleep 5
+										pm2 list
+										sleep 5
+										sleep2
+										rm ./envScript.sh
+										break
 									fi
 								fi
 
