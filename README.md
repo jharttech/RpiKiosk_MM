@@ -1,5 +1,6 @@
 This is a helper script to do the heavy lifting for kiosking a raspberry pi to an already running MagicMirror Server.
 This script has issues being ran over ssh and is not recommended.
+<b>NOTE: Do NOT run this script more than once without re-imaging your Rpi.  It will cause multiple instances of the nodes and electron and will lock the Rpi up.</b>
 
 For help setting up a MagicMirror Server please visit the <a href="https://github.com/MichMich/MagicMirror">MagicMirror</a> github page.
 
