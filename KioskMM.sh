@@ -93,25 +93,6 @@ npm install
 # Now going to setup the Rpi Client for use as MagicMirror
 # client
 
-# Here we turn on Open GL Driver to decrease Electron CPU Usage
-# Make a Backup of original config file
-sudo cp /boot/config.txt /boot/config.txt.original
-while true; do
-	_Prev_Ran=$(ls /boot/ | grep "config.txt.KioskMMBackup")
-	if [ "" == "$_Prev_Ran" ];
-	then
-		sudo cp /boot/config.txt /boot/config.txt.KioskMMBackup
-		dialog --title "Open GL Driver" \
-			--clear \
-			--timeout 5 \
-			--msgbox "Now writing the following entry to the config file.\n\n#Turn on OpenGL Driver.\ndtoverlay=vc4-kms-v3d" 0 0
-		echo -e "# Turn on Open GL Driver.\ndtoverlay=vc4-kms-v3d" | sudo tee -a /boot/config.txt
-		break
-	else
-		sudo mv /boot/config.txt.KioskMMBackup /boot/config.txt
-		break
-	fi
-done
 
 while true; do
 	_Prev_RanTwo=$(ls /etc/xdg/lxsession/LXDE-pi/ | grep "autostart.KioskMMBackup")
